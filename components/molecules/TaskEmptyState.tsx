@@ -1,15 +1,20 @@
-import { Image, StyleSheet, Text, View } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 
 type TaskEmptyStateProps = {
   onCreateTask: () => void;
   title?: string;
   description?: string;
   buttonLabel?: string;
+  showAction?: boolean;
 };
 
 export const TaskEmptyState = ({
+  onCreateTask,
   title = "No tasks yet",
   description = "Start with one clear next step and keep your day moving.",
+  buttonLabel = "New Task",
+  showAction = true,
 }: TaskEmptyStateProps) => {
   return (
     <View style={styles.container}>
@@ -22,6 +27,19 @@ export const TaskEmptyState = ({
 
       <Text style={styles.title}>{title}</Text>
       <Text style={styles.description}>{description}</Text>
+
+      {showAction ? (
+        <TouchableOpacity
+          accessibilityLabel={buttonLabel}
+          accessibilityRole="button"
+          activeOpacity={0.84}
+          onPress={onCreateTask}
+          style={styles.button}
+        >
+          <Ionicons color="#FFFFFF" name="add-circle-outline" size={20} />
+          <Text style={styles.buttonText}>{buttonLabel}</Text>
+        </TouchableOpacity>
+      ) : null}
     </View>
   );
 };
@@ -64,5 +82,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 22,
     textAlign: "center",
+  },
+  button: {
+    minHeight: 46,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+    marginTop: 18,
+    paddingHorizontal: 18,
+    borderRadius: 16,
+    backgroundColor: "#2563EB",
+  },
+  buttonText: {
+    color: "#FFFFFF",
+    fontSize: 15,
+    fontWeight: "700",
   },
 });

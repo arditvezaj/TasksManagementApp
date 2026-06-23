@@ -1,50 +1,57 @@
-# Welcome to your Expo app 👋
+# PRITECH React Native Task Manager
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A simple Expo React Native task management app built with TypeScript, Expo Router, reusable components, local device storage, and a small public API seed.
 
-## Get started
+## Setup
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Install dependencies:
 
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Start the Expo app:
 
-## Learn more
+```bash
+npx expo start
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Then open the project in Expo Go on a mobile device, or run it on an Android/iOS simulator from the Expo CLI menu.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+Run quality checks:
 
-## Join the community
+```bash
+npm run typecheck
+npm run lint
+```
 
-Join our community of developers creating universal apps.
+## Implemented
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- Task list screen with clean UI, search, status filters, and empty states
+- Add task screen with title, description, status selection, and validation
+- Task details screen with task information and actions
+- Mark task as completed or not completed
+- Delete task with a confirmation modal
+- Local task persistence using Expo SecureStore
+- First-launch starter tasks fetched from JSONPlaceholder, with bundled fallback tasks if the API is unavailable
+- Simple Expo Router navigation between list, add, and details screens
+- Reusable components organized into atoms, molecules, and organisms
+
+## Task Data
+
+Each task contains:
+
+- `title`
+- `description`
+- `completed`
+- `createdAt`
+
+## Public API
+
+On first launch, if no local tasks exist, the app fetches starter tasks from:
+
+```text
+https://jsonplaceholder.typicode.com/todos?_limit=4
+```
+
+Those tasks are converted into the local task shape and saved on the device.

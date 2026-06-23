@@ -15,8 +15,8 @@ import { DeleteTaskModal } from "@/components/organisms/DeleteTaskModal";
 import { TaskDetailsActions } from "@/components/organisms/TaskDetailsActions";
 import { TaskDetailsHero } from "@/components/organisms/TaskDetailsHero";
 import { TaskDetailsInfo } from "@/components/organisms/TaskDetailsInfo";
-import { SAMPLE_TASKS } from "@/constants/tasks";
 import type { Task } from "@/constants/types";
+import { useTasks } from "@/contexts/TasksContext";
 
 type IconName = ComponentProps<typeof Ionicons>["name"];
 
@@ -54,8 +54,98 @@ const getTaskStatusLabel = (task: Task) => {
 const TaskDetailsScreen = () => {
   const router = useRouter();
   const { id } = useLocalSearchParams<{ id?: string }>();
+  const { tasks, isLoading, deleteTask, toggleTaskStatus } = useTasks();
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
-  const task = SAMPLE_TASKS.find((item) => item.id === id) ?? SAMPLE_TASKS[0];
+  const task = tasks.find((item) => item.id === id);
+
+  const handleBack = () => router.back();
+
+  const handleToggleStatus = () => {
+    if (!task) {
+      return;
+    }
+
+    toggleTaskStatus(task.id);
+  };
+
+  const handleOpenDeleteModal = () => {
+    setIsDeleteModalVisible(true);
+  };
+
+  const handleCloseDeleteModal = () => {
+    setIsDeleteModalVisible(false);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!task) {
+      setIsDeleteModalVisible(false);
+      return;
+    }
+
+    deleteTask(task.id);
+    setIsDeleteModalVisible(false);
+    router.replace("/");
+  };
+
+  const renderUnavailableState = (title: string, description: string) => {
+    return (
+      <View style={styles.messageCard}>
+        <Ionicons color="#2563EB" name="information-circle-outline" size={30} />
+        <Text style={styles.messageTitle}>{title}</Text>
+        <Text style={styles.messageDescription}>{description}</Text>
+      </View>
+    );
+  };
+
+  if (isLoading) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.header}>
+          <BackButton onPress={handleBack} />
+
+          <View style={styles.headerCopy}>
+            <Text style={styles.headerTitle}>Task Details</Text>
+          </View>
+
+          <View style={styles.headerSpacer} />
+        </View>
+
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {renderUnavailableState("Loading task", "Preparing this task details view.")}
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
+  if (!task) {
+    return (
+      <SafeAreaView style={styles.safeArea}>
+        <View style={styles.header}>
+          <BackButton onPress={handleBack} />
+
+          <View style={styles.headerCopy}>
+            <Text style={styles.headerTitle}>Task Details</Text>
+          </View>
+
+          <View style={styles.headerSpacer} />
+        </View>
+
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          showsVerticalScrollIndicator={false}
+        >
+          {renderUnavailableState(
+            "Task not found",
+            "This task may have been deleted or is no longer available.",
+          )}
+        </ScrollView>
+      </SafeAreaView>
+    );
+  }
+
   const statusLabel = getTaskStatusLabel(task);
   const statusIcon: IconName = task.completed
     ? "checkmark-done"
@@ -71,15 +161,6 @@ const TaskDetailsScreen = () => {
   const createdDateLabel = getTaskDateLabel(task.createdAt);
   const createdTimeLabel = getTaskTimeLabel(task.createdAt);
 
-  const handleBack = () => router.back();
-
-  const handleToggleStatus = () => {};
-
-  const toggleDeleteModal = () =>
-    setIsDeleteModalVisible((prevState) => !prevState);
-
-  const handleConfirmDelete = () => setIsDeleteModalVisible(false);
-
   return (
     <SafeAreaView style={styles.safeArea}>
       <View style={styles.header}>
@@ -93,7 +174,7 @@ const TaskDetailsScreen = () => {
           accessibilityLabel="Delete task"
           accessibilityRole="button"
           activeOpacity={0.8}
-          onPress={toggleDeleteModal}
+          onPress={handleOpenDeleteModal}
           style={styles.headerDeleteButton}
         >
           <Ionicons color="#DC2626" name="trash-outline" size={20} />
@@ -123,7 +204,7 @@ const TaskDetailsScreen = () => {
         />
 
         <TaskDetailsActions
-          onDeleteTask={toggleDeleteModal}
+          onDeleteTask={handleOpenDeleteModal}
           onToggleStatus={handleToggleStatus}
           toggleIcon={toggleIcon}
           toggleLabel={toggleLabel}
@@ -131,7 +212,7 @@ const TaskDetailsScreen = () => {
       </ScrollView>
 
       <DeleteTaskModal
-        onCancel={toggleDeleteModal}
+        onCancel={handleCloseDeleteModal}
         onConfirm={handleConfirmDelete}
         taskTitle={task.title}
         visible={isDeleteModalVisible}
@@ -173,9 +254,35 @@ const styles = StyleSheet.create({
     borderRadius: 16,
     backgroundColor: "#FEF2F2",
   },
+  headerSpacer: {
+    width: 44,
+    height: 44,
+  },
   scrollContent: {
     padding: 20,
     paddingBottom: 38,
+  },
+  messageCard: {
+    alignItems: "center",
+    padding: 24,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+    borderRadius: 24,
+    backgroundColor: "#FFFFFF",
+  },
+  messageTitle: {
+    marginTop: 12,
+    color: "#111827",
+    fontSize: 20,
+    fontWeight: "700",
+    textAlign: "center",
+  },
+  messageDescription: {
+    marginTop: 8,
+    color: "#64748B",
+    fontSize: 14,
+    lineHeight: 21,
+    textAlign: "center",
   },
 });
 

@@ -22,8 +22,7 @@ export const TaskDetailsActions = ({
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>Actions</Text>
       <Text style={styles.sectionDescription}>
-        These controls are ready for the next pass when task functionality is
-        wired.
+        Update the task status or remove this task from your list.
       </Text>
 
       <View style={styles.actions}>

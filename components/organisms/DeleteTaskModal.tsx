@@ -43,8 +43,8 @@ export const DeleteTaskModal = ({
 
           <Text style={styles.modalTitle}>Delete this task?</Text>
           <Text style={styles.modalDescription}>
-            Are you sure you want to delete {taskTitle}? This extra check helps
-            prevent accidental deletes.
+            Are you sure you want to delete {taskTitle}? This action cannot be
+            undone.
           </Text>
 
           <View style={styles.modalActions}>
@@ -118,7 +118,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
     color: "#111827",
     fontSize: 22,
-    fontWeight: "800",
+    fontWeight: "600",
     textAlign: "center",
   },
   modalDescription: {

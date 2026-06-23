@@ -6,6 +6,8 @@ import type { Task } from "@/constants/types";
 type TaskListItemProps = {
   task: Task;
   onPress: (task: Task) => void;
+  onToggleStatus: (task: Task) => void;
+  onDeleteTask: (task: Task) => void;
 };
 
 const getTaskDateLabel = (createdAt: string) => {
@@ -21,25 +23,28 @@ const getTaskDateLabel = (createdAt: string) => {
   });
 };
 
-export const TaskListItem = ({ task, onPress }: TaskListItemProps) => {
+export const TaskListItem = ({
+  task,
+  onPress,
+  onToggleStatus,
+  onDeleteTask,
+}: TaskListItemProps) => {
   const isCompleted = task.completed;
 
   const handlePress = () => {
     onPress(task);
   };
 
-  const handleToggleStatus = () => {};
+  const handleToggleStatus = () => {
+    onToggleStatus(task);
+  };
 
-  const handleDelete = () => {};
+  const handleDelete = () => {
+    onDeleteTask(task);
+  };
 
   return (
-    <TouchableOpacity
-      accessibilityLabel={`Open task ${task.title}`}
-      accessibilityRole="button"
-      activeOpacity={0.82}
-      onPress={handlePress}
-      style={[styles.card, isCompleted ? styles.cardCompleted : null]}
-    >
+    <View style={[styles.card, isCompleted ? styles.cardCompleted : null]}>
       <View
         style={[
           styles.statusRail,
@@ -70,7 +75,13 @@ export const TaskListItem = ({ task, onPress }: TaskListItemProps) => {
 
       <View style={styles.content}>
         <View style={styles.titleRow}>
-          <View style={styles.titleCopy}>
+          <TouchableOpacity
+            accessibilityLabel={`Open task ${task.title}`}
+            accessibilityRole="button"
+            activeOpacity={0.82}
+            onPress={handlePress}
+            style={styles.titlePressable}
+          >
             <Text
               numberOfLines={1}
               style={[styles.title, isCompleted ? styles.titleCompleted : null]}
@@ -80,7 +91,7 @@ export const TaskListItem = ({ task, onPress }: TaskListItemProps) => {
             <Text style={styles.dateCaption}>
               {getTaskDateLabel(task.createdAt)}
             </Text>
-          </View>
+          </TouchableOpacity>
 
           <TouchableOpacity
             accessibilityLabel={`Delete ${task.title}`}
@@ -93,45 +104,53 @@ export const TaskListItem = ({ task, onPress }: TaskListItemProps) => {
           </TouchableOpacity>
         </View>
 
-        <Text
-          numberOfLines={2}
-          style={[
-            styles.description,
-            isCompleted ? styles.descriptionCompleted : null,
-          ]}
+        <TouchableOpacity
+          accessibilityLabel={`Open task ${task.title}`}
+          accessibilityRole="button"
+          activeOpacity={0.82}
+          onPress={handlePress}
+          style={styles.bodyPressable}
         >
-          {task.description}
-        </Text>
-
-        <View style={styles.metaRow}>
-          <View
+          <Text
+            numberOfLines={2}
             style={[
-              styles.statePill,
-              isCompleted ? styles.completedPill : styles.activePill,
+              styles.description,
+              isCompleted ? styles.descriptionCompleted : null,
             ]}
           >
-            <Ionicons
-              color={isCompleted ? "#0F766E" : "#B45309"}
-              name={isCompleted ? "checkmark-circle" : "ellipse-outline"}
-              size={14}
-            />
-            <Text
+            {task.description}
+          </Text>
+
+          <View style={styles.metaRow}>
+            <View
               style={[
-                styles.stateText,
-                isCompleted ? styles.completedText : styles.activeText,
+                styles.statePill,
+                isCompleted ? styles.completedPill : styles.activePill,
               ]}
             >
-              {isCompleted ? "Completed" : "Not completed"}
-            </Text>
-          </View>
+              <Ionicons
+                color={isCompleted ? "#0F766E" : "#B45309"}
+                name={isCompleted ? "checkmark-circle" : "ellipse-outline"}
+                size={14}
+              />
+              <Text
+                style={[
+                  styles.stateText,
+                  isCompleted ? styles.completedText : styles.activeText,
+                ]}
+              >
+                {isCompleted ? "Completed" : "Not completed"}
+              </Text>
+            </View>
 
-          <View style={styles.openHint}>
-            <Text style={styles.openHintText}>Details</Text>
-            <Ionicons color="#64748B" name="chevron-forward" size={16} />
+            <View style={styles.openHint}>
+              <Text style={styles.openHintText}>Details</Text>
+              <Ionicons color="#64748B" name="chevron-forward" size={16} />
+            </View>
           </View>
-        </View>
+        </TouchableOpacity>
       </View>
-    </TouchableOpacity>
+    </View>
   );
 };
 
@@ -203,7 +222,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 10,
   },
-  titleCopy: {
+  titlePressable: {
     flex: 1,
   },
   title: {
@@ -231,7 +250,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#FEF2F2",
   },
   description: {
-    marginTop: 4,
     color: "#64748B",
     fontSize: 14,
     lineHeight: 21,
@@ -245,6 +263,9 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     gap: 8,
     marginTop: 10,
+  },
+  bodyPressable: {
+    marginTop: 4,
   },
   statePill: {
     minHeight: 30,

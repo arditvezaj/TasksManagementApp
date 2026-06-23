@@ -75,14 +75,14 @@ const styles = StyleSheet.create({
   title: {
     marginTop: 18,
     color: "#111827",
-    fontSize: 26,
-    fontWeight: "800",
-    lineHeight: 34,
+    fontSize: 22,
+    fontWeight: "700",
+    lineHeight: 30,
   },
   description: {
-    marginTop: 12,
+    marginTop: 10,
     color: "#475569",
-    fontSize: 16,
+    fontSize: 15.5,
     lineHeight: 24,
   },
 });

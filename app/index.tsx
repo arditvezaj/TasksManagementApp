@@ -7,9 +7,10 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { TaskEmptyState } from "@/components/molecules/TaskEmptyState";
 import { TaskListItem } from "@/components/molecules/TaskListItem";
+import { DeleteTaskModal } from "@/components/organisms/DeleteTaskModal";
 import { TaskListHeader } from "@/components/organisms/TaskListHeader";
-import { SAMPLE_TASKS } from "@/constants/tasks";
 import type { Task, TaskStatusFilter } from "@/constants/types";
+import { useTasks } from "@/contexts/TasksContext";
 
 const getFilteredTasks = (
   tasks: Task[],
@@ -50,7 +51,7 @@ const getEmptyStateContent = (filter: TaskStatusFilter, query: string) => {
 
   if (filter === "not-completed") {
     return {
-      title: "No active tasks",
+      title: "No tasks marked not completed",
       description:
         "Completed work is out of the way. Add a task when something new appears.",
     };
@@ -72,13 +73,19 @@ const getEmptyStateContent = (filter: TaskStatusFilter, query: string) => {
 
 const TaskListScreen = () => {
   const router = useRouter();
-  const tasks = SAMPLE_TASKS;
+  const { tasks, isLoading, deleteTask, toggleTaskStatus } = useTasks();
   const [selectedFilter, setSelectedFilter] = useState<TaskStatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [taskPendingDelete, setTaskPendingDelete] = useState<Task | null>(null);
   const filteredTasks = useMemo(() => {
     return getFilteredTasks(tasks, selectedFilter, searchQuery);
   }, [searchQuery, selectedFilter, tasks]);
-  const emptyStateContent = getEmptyStateContent(selectedFilter, searchQuery);
+  const emptyStateContent = isLoading
+    ? {
+        title: "Loading tasks",
+        description: "Preparing your saved tasks.",
+      }
+    : getEmptyStateContent(selectedFilter, searchQuery);
 
   const handleAddTask = () => router.push("/add-task");
 
@@ -95,14 +102,41 @@ const TaskListScreen = () => {
       },
     });
 
+  const handleToggleStatus = (task: Task) => {
+    toggleTaskStatus(task.id);
+  };
+
+  const handleRequestDelete = (task: Task) => {
+    setTaskPendingDelete(task);
+  };
+
+  const handleCancelDelete = () => {
+    setTaskPendingDelete(null);
+  };
+
+  const handleConfirmDelete = () => {
+    if (!taskPendingDelete) {
+      return;
+    }
+
+    deleteTask(taskPendingDelete.id);
+    setTaskPendingDelete(null);
+  };
+
   const renderTask: ListRenderItem<Task> = ({ item }) => (
-    <TaskListItem onPress={handleOpenTask} task={item} />
+    <TaskListItem
+      onDeleteTask={handleRequestDelete}
+      onPress={handleOpenTask}
+      onToggleStatus={handleToggleStatus}
+      task={item}
+    />
   );
 
   const renderEmptyState = () => (
     <TaskEmptyState
       description={emptyStateContent.description}
       onCreateTask={handleAddTask}
+      showAction={!isLoading}
       title={emptyStateContent.title}
     />
   );
@@ -137,6 +171,13 @@ const TaskListScreen = () => {
       >
         <Ionicons color="#FFFFFF" name="add" size={28} />
       </TouchableOpacity>
+
+      <DeleteTaskModal
+        onCancel={handleCancelDelete}
+        onConfirm={handleConfirmDelete}
+        taskTitle={taskPendingDelete?.title ?? ""}
+        visible={Boolean(taskPendingDelete)}
+      />
     </SafeAreaView>
   );
 };

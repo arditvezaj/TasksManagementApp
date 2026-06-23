@@ -54,7 +54,7 @@ export const TaskListHeader = ({
     <View style={styles.header}>
       <View style={styles.hero}>
         <View style={styles.heroCopy}>
-          <Text style={styles.title}>TaskList</Text>
+          <Text style={styles.title}>Task Management App</Text>
           <Text style={styles.subtitle}>
             A clean place to plan, track, and finish the work ahead.
           </Text>
@@ -152,6 +152,7 @@ const styles = StyleSheet.create({
     paddingBottom: 8,
   },
   hero: {
+    marginTop: 2,
     marginHorizontal: 20,
     overflow: "hidden",
     borderWidth: 1,
@@ -160,16 +161,16 @@ const styles = StyleSheet.create({
     backgroundColor: "#EAF4FF",
   },
   heroCopy: {
-    paddingTop: 20,
-    paddingHorizontal: 20,
+    paddingTop: 18,
+    paddingHorizontal: 18,
   },
   title: {
     color: "#111827",
-    fontSize: 26,
+    fontSize: 24,
     fontWeight: "700",
   },
   subtitle: {
-    marginTop: 2,
+    marginTop: 4,
     color: "#4B5563",
     fontSize: 15,
   },

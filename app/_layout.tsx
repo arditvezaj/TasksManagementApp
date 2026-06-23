@@ -7,6 +7,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import "react-native-reanimated";
 
+import { TasksProvider } from "@/contexts/TasksContext";
 import { useColorScheme } from "@/hooks/use-color-scheme";
 
 const RootLayout = () => {
@@ -14,11 +15,13 @@ const RootLayout = () => {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen name="add-task" options={{ headerShown: false }} />
-        <Stack.Screen name="task/[id]" options={{ headerShown: false }} />
-      </Stack>
+      <TasksProvider>
+        <Stack>
+          <Stack.Screen name="index" options={{ headerShown: false }} />
+          <Stack.Screen name="add-task" options={{ headerShown: false }} />
+          <Stack.Screen name="task/[id]" options={{ headerShown: false }} />
+        </Stack>
+      </TasksProvider>
       <StatusBar style="auto" />
     </ThemeProvider>
   );

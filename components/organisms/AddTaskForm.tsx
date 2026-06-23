@@ -9,10 +9,29 @@ import {
 } from "react-native";
 
 type AddTaskFormProps = {
+  title: string;
+  description: string;
+  completed: boolean;
+  errors: {
+    title?: string;
+    description?: string;
+  };
+  onTitleChange: (value: string) => void;
+  onDescriptionChange: (value: string) => void;
+  onStatusChange: (completed: boolean) => void;
   onSubmit: () => void;
 };
 
-export const AddTaskForm = ({ onSubmit }: AddTaskFormProps) => {
+export const AddTaskForm = ({
+  title,
+  description,
+  completed,
+  errors,
+  onTitleChange,
+  onDescriptionChange,
+  onStatusChange,
+  onSubmit,
+}: AddTaskFormProps) => {
   return (
     <ScrollView
       contentContainerStyle={styles.scrollContent}
@@ -33,21 +52,36 @@ export const AddTaskForm = ({ onSubmit }: AddTaskFormProps) => {
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Title</Text>
           <TextInput
+            onChangeText={onTitleChange}
             placeholder="Enter task title"
             placeholderTextColor="#94A3B8"
-            style={styles.input}
+            returnKeyType="next"
+            style={[styles.input, errors.title ? styles.inputError : null]}
+            value={title}
           />
+          {errors.title ? (
+            <Text style={styles.errorText}>{errors.title}</Text>
+          ) : null}
         </View>
 
         <View style={styles.fieldGroup}>
           <Text style={styles.label}>Description</Text>
           <TextInput
             multiline
+            onChangeText={onDescriptionChange}
             placeholder="Short task description"
             placeholderTextColor="#94A3B8"
-            style={[styles.input, styles.textArea]}
+            style={[
+              styles.input,
+              styles.textArea,
+              errors.description ? styles.inputError : null,
+            ]}
             textAlignVertical="top"
+            value={description}
           />
+          {errors.description ? (
+            <Text style={styles.errorText}>{errors.description}</Text>
+          ) : null}
         </View>
 
         <View style={styles.fieldGroup}>
@@ -57,12 +91,24 @@ export const AddTaskForm = ({ onSubmit }: AddTaskFormProps) => {
               accessibilityLabel="Set task as not completed"
               accessibilityRole="button"
               activeOpacity={0.8}
-              onPress={onSubmit}
-              style={[styles.statusOption, styles.statusOptionActive]}
+              onPress={() => {
+                onStatusChange(false);
+              }}
+              style={[
+                styles.statusOption,
+                !completed ? styles.statusOptionActive : null,
+              ]}
             >
-              <Ionicons color="#2563EB" name="ellipse-outline" size={18} />
+              <Ionicons
+                color={!completed ? "#2563EB" : "#64748B"}
+                name="ellipse-outline"
+                size={18}
+              />
               <Text
-                style={[styles.statusOptionText, styles.statusOptionTextActive]}
+                style={[
+                  styles.statusOptionText,
+                  !completed ? styles.statusOptionTextActive : null,
+                ]}
               >
                 Not completed
               </Text>
@@ -72,15 +118,27 @@ export const AddTaskForm = ({ onSubmit }: AddTaskFormProps) => {
               accessibilityLabel="Set task as completed"
               accessibilityRole="button"
               activeOpacity={0.8}
-              onPress={onSubmit}
-              style={styles.statusOption}
+              onPress={() => {
+                onStatusChange(true);
+              }}
+              style={[
+                styles.statusOption,
+                completed ? styles.statusOptionActive : null,
+              ]}
             >
               <Ionicons
-                color="#64748B"
+                color={completed ? "#2563EB" : "#64748B"}
                 name="checkmark-circle-outline"
                 size={18}
               />
-              <Text style={styles.statusOptionText}>Completed</Text>
+              <Text
+                style={[
+                  styles.statusOptionText,
+                  completed ? styles.statusOptionTextActive : null,
+                ]}
+              >
+                Completed
+              </Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -121,8 +179,8 @@ const styles = StyleSheet.create({
   title: {
     marginTop: 14,
     color: "#111827",
-    fontSize: 24,
-    fontWeight: "800",
+    fontSize: 23,
+    fontWeight: "700",
     textAlign: "center",
   },
   description: {
@@ -172,6 +230,15 @@ const styles = StyleSheet.create({
     minHeight: 116,
     paddingTop: 14,
     lineHeight: 21,
+  },
+  inputError: {
+    borderColor: "#FCA5A5",
+    backgroundColor: "#FFF7F7",
+  },
+  errorText: {
+    color: "#DC2626",
+    fontSize: 12,
+    fontWeight: "600",
   },
   statusSelector: {
     flexDirection: "row",
